@@ -1,12 +1,48 @@
-import database from "./database.js";
+import database from "../Config/database.js";
 
 
 const list = (req, res) => {
-    database.query("SELECT * FROM movies")
-    .then(([movies])=>{
-      res.json(movies)
-    })
+    const limit = parseInt(req.query.limit);
+    const min_rating = parseFloat(req.query.min_rating); // suppose que rating est un float (ex : 7.5)
+
+    let query = "SELECT * FROM movies";
+    const params = [];
+
+    if (!isNaN(min_rating)) {
+        query += " WHERE rating >= ?";
+        params.push(min_rating);
+    }
+
+    if (!isNaN(limit)) {
+        query += " LIMIT ?";
+        params.push(limit);
+    }
+
+    database
+        .query(query, params)
+        .then(([movies]) => {
+            res.json(movies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.sendStatus(500);
+        });
 };
+
+// MIN_RATING
+/*export const min_rating = (req, res) => {
+    database.query("SELECT * FROM movies WHERE rating > ?")
+    .then(([movies])=>{
+        if (movies[0] != null) {
+            res.json(movies[0]);
+        } else {
+            res.sendStatus(404);
+        }
+    }).catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+    }); SELECT * FROM movies RIGHT JOIN categories ON movie.id_category = category.id;
+}*/
 
 export const show = (req, res) => {
   const id =
@@ -26,8 +62,7 @@ export const show = (req, res) => {
    });
 };
 
-
-
+// ------------------------ MOVIES --------------------------
 export const insert = (req, res) => {
   const { title, director, release_year, rating, category_id } = req.body;
 
@@ -91,5 +126,6 @@ export const remove = (req, res) => {
     res.sendStatus(500);
    });
 };
+
 
 export default list;

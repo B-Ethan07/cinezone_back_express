@@ -31,7 +31,10 @@ export const show = (req, res) => {
 export const insert = (req, res) => {
   const { title, director, release_year, rating, category_id } = req.body;
 
-  database.query("INSERT INTO movies (title, director, release_year, rating, category_id) VALUES (?)", [title, director, release_year, rating, category_id])
+  database.query(
+  "INSERT INTO movies (title, director, release_year, rating, category_id) VALUES (?, ?, ?, ?, ?)",
+  [title, director, release_year, rating, category_id]
+)
     .then(([result]) => {
       res.status(201).json({
         message: "Ajouté",
@@ -54,7 +57,10 @@ export const update = (req, res) => {
   const id = parseInt(req.params.id);
 
   const { title, director, release_year, rating, category_id } = req.body;
-  database.query("UPDATE movies SET title = ?, director = ?, release_year = ?, rating= ?, category_id = ?  WHERE id = ?", [id, title, director, release_year, rating, category_id])
+  database.query(
+  "UPDATE movies SET title = ?, director = ?, release_year = ?, rating = ?, category_id = ? WHERE id = ?",
+  [title, director, release_year, rating, category_id, id]
+)
     .then(([result]) => {
       if (result.affectedRows === 0) {
         res.sendStatus(404);

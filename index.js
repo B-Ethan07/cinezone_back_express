@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 
-const serverPort = 3000;
+const serverPort = process.env.SERVER_PORT ?? 3000;
 
 // GET /movies
 // /movies?limit=2
@@ -25,8 +25,8 @@ app.put("/movies/:id", update);
 app.delete("/movies/:id", remove);
 
 app.get("/", (req, res) => {
-  console.log("J'ai une requête : ", req);
-  res.send("Hello User !!!");
+  console.log(`Requête reçue : ${req.method} ${req.url}`);
+  res.send("<h1>Hello User ! Welcome in API CineZone</h1>");
 });
 
 app.listen(serverPort, () => {

@@ -2,40 +2,41 @@ import express from "express";
 
 import list, {insert, remove, show, update} from "./Controller/MoviesController.js";
 import {category, moviesByCategory} from "./Controller/CategoriesController.js";
+import { validateMovie } from "./middleware/validateMovie.js";
+import { query } from "express-validator";
+import { movieValidator } from "./middleware/movieValidator.js";
+import handleValidationError from './middleware/handleValidationError.js';
+import { logger } from "./middleware/logger.js";
+import { requireAdminQuery } from "./middleware/requireAdminQuery.js";
+import { categoriesRouter } from "./routes/categories.js";
+import { moviesRouter } from "./routes/movies.js";
 
+// Création de l'application Express
 const app = express();
 
-app.use(express.json());
-
+// Port du serveur, par défaut 3000 ou défini par la variable d'environnement SERVER_PORT
 const serverPort = process.env.SERVER_PORT ?? 3000;
 
-// GET /movies
-// /movies?limit=2
-// /movies?min_rating=9
-app.get("/movies", list);
+// ---------------MIDDLEWARE ---------------------------
 
-// GET /movies/:id
-app.get("/movies/:id", show);
+// middleware express.json() pour parser le corps des requêtes en JSON
+app.use(express.json());
+// log method, url and date of the request
+app.use(logger); 
 
-// GET /categories
-app.get("/categories", category);
+// ---------------ROUTE INDEX ---------------------------
 
-// GET movie by category
-app.get("/categories/:id/movies", moviesByCategory);
+app.use("/movies", moviesRouter);
+app.use("/categories", categoriesRouter);
 
-// POST
-app.post("/movies", insert);
+// ---------------ROUTE Controller ---------------------------
 
-// PUT
-app.put("/movies/:id", update);
-
-// DELETE
-app.delete("/movies/:id", remove);
 
 app.get("/", (req, res) => {
   console.log(`Requête reçue : ${req.method} ${req.url}`);
   res.send("<h1>Hello User ! Welcome in API CineZone</h1>");
 });
+
 
 app.listen(serverPort, () => {
   console.info(`Listening on port http://localhost:${serverPort}`);

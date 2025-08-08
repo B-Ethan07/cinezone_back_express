@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { userValidator } from '../middleware/userValidator.js';
-import { createUser }  from '../Controller/UsersController.js';
-import { checkEMailNotTaken, hashPassword } from '../middleware/authValidator.js';
+import { createUser, login }  from '../Controller/UsersController.js';
+import { checkEMailNotTaken, findUserByEmail, verifyPassword, hashPassword, validateLogin } from '../middleware/authValidator.js';
 
 const router = Router();
 

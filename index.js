@@ -3,6 +3,9 @@ import { logger } from "./middleware/logger.js";
 import { categoriesRouter } from "./routes/categories.js";
 import { moviesRouter } from "./routes/movies.js";
 import { usersRouter } from "./routes/users.js";
+import { login, myProfile}  from './Controller/UsersController.js';
+import { findUserByEmail, verifyPassword, validateLogin, requireAuth } from './middleware/authValidator.js';
+import cookieParser from "cookie-parser";
 
 // Création de l'application Express
 const app = express();
@@ -16,12 +19,15 @@ const serverPort = process.env.SERVER_PORT ?? 3000;
 app.use(express.json());
 // log method, url and date of the request
 app.use(logger); 
+app.use(cookieParser()); // Middleware pour parser les cookies
 
 // ---------------ROUTE INDEX ---------------------------
 
 app.use("/movies", moviesRouter);
 app.use("/categories", categoriesRouter);
 app.use("/users", usersRouter);
+app.post("/login", validateLogin, findUserByEmail, verifyPassword, login);
+app.get("/my-profile", requireAuth, myProfile )
 
 // ---------------ROUTE Controller ---------------------------
 

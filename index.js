@@ -1,15 +1,8 @@
 import express from "express";
-
-import list, {insert, remove, show, update} from "./Controller/MoviesController.js";
-import {category, moviesByCategory} from "./Controller/CategoriesController.js";
-import { validateMovie } from "./middleware/validateMovie.js";
-import { query } from "express-validator";
-import { movieValidator } from "./middleware/movieValidator.js";
-import handleValidationError from './middleware/handleValidationError.js';
 import { logger } from "./middleware/logger.js";
-import { requireAdminQuery } from "./middleware/requireAdminQuery.js";
 import { categoriesRouter } from "./routes/categories.js";
 import { moviesRouter } from "./routes/movies.js";
+import { usersRouter } from "./routes/users.js";
 
 // Création de l'application Express
 const app = express();
@@ -28,6 +21,7 @@ app.use(logger);
 
 app.use("/movies", moviesRouter);
 app.use("/categories", categoriesRouter);
+app.use("/users", usersRouter);
 
 // ---------------ROUTE Controller ---------------------------
 

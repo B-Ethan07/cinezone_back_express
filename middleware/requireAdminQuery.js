@@ -2,7 +2,7 @@
 
 export function requireAdminQuery(req, res, next) {
     // Vérifie si la requête contient le paramètre 'admin' avec la valeur 'true'
-    if (req.query.admin === 'true') {
+    if (req.query.role === 'admin') {
         console.log('Admin access granted');
         next(); // Passe au middleware suivant si l'accès admin est accordé
     } else {

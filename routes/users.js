@@ -8,4 +8,5 @@ const router = Router();
 // POST
 router.post("/", userValidator, checkEMailNotTaken, hashPassword, createUser);
 
+
 export { router as usersRouter };

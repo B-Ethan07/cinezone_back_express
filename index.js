@@ -3,9 +3,10 @@ import { logger } from "./middleware/logger.js";
 import { categoriesRouter } from "./routes/categories.js";
 import { moviesRouter } from "./routes/movies.js";
 import { usersRouter } from "./routes/users.js";
-import { login, myProfile}  from './Controller/UsersController.js';
+import { login, logout, myProfile}  from './Controller/UsersController.js';
 import { findUserByEmail, verifyPassword, validateLogin, requireAuth } from './middleware/authValidator.js';
 import cookieParser from "cookie-parser";
+import cors from 'cors';
 
 // Création de l'application Express
 const app = express();
@@ -17,6 +18,10 @@ const serverPort = process.env.SERVER_PORT ?? 3000;
 
 // middleware express.json() pour parser le corps des requêtes en JSON
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:4200', // Angular dev server
+  credentials: true               // Allow cookies/auth headers
+}));
 // log method, url and date of the request
 app.use(logger); 
 app.use(cookieParser()); // Middleware pour parser les cookies
@@ -27,7 +32,8 @@ app.use("/movies", moviesRouter);
 app.use("/categories", categoriesRouter);
 app.use("/users", usersRouter);
 app.post("/login", validateLogin, findUserByEmail, verifyPassword, login);
-app.get("/my-profile", requireAuth, myProfile )
+app.get("/profile", requireAuth, myProfile )
+app.get("/logout", logout);
 
 // ---------------ROUTE Controller ---------------------------
 

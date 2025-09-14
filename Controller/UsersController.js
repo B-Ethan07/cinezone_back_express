@@ -20,28 +20,35 @@ export async function createUser(req, res) {
     }
 };
 
-export async function login(req, res) {
-    // On récupère l'utilisateur de la requête
-    const { user} = req;
-    const now = Math.floor(Date.now() / 1000);
-    // Génération du token JWT
-    const token = jwt.sign({
-    sub: user.id,
-    iat: now,
-    exp: now + 60 * 60 * 24, // Expiration dans 24 heures
-}, process.env.JWT_SECRET);
-
-    // On envoie le token dans un cookie HTTP-only
-    // Le cookie est sécurisé et a une durée de vie de 24 heures
-    res.cookie("access_token", token, {
-        httpOnly: true,
-        secure: false /* process.env.NODE_ENV === "production" */, // Utiliser secure en production
-        maxAge: 60 * 60 * 24 * 1000, 
-    });
-    /* console.log("Token JWT généré :", token);
-    console.log("User ID:", user.id); */
-
-    res.sendStatus(200);
+export function login(req, res) {
+  const { user } = req;
+  // On prend le timestamp actuel (milliseconde)
+  // on convertit en seconde et on arrondi
+  const now = Math.floor(Date.now() / 1000);
+  // dans le token, on place l'identifiant de l'user connecté
+  // ainsi que le timestamp de création et d'expiration
+  const token = jwt.sign(
+    {
+      sub: user.id,
+      iat: now,
+      exp:
+        now +
+        60 *
+          60 *
+          24 /* idéal serait que la durée d'expiration soit dans le .env*/,
+    },
+    process.env.JWT_SECRET
+  );
+  // httponly pour qu'il ne soit pas accessible via Javascript
+  // secure pour préciser que ns n'utilisons pas HTTPS
+  // expire dans 1 jr (à mettre dans le .env)
+res.cookie("access_token", token, {
+  httpOnly: true,
+  secure: false,
+  maxAge: 60 * 60 * 24 * 1000,
+  sameSite: "lax",
+});
+  res.status(200).send({ message: "ok" });
 }
 
 export async function myProfile(req, res) {
@@ -62,4 +69,8 @@ export async function myProfile(req, res) {
         console.error(err);
         res.sendStatus(500);
     }
+}
+  export function logout(req, res) {
+  res.clearCookie("access_token"); // ← le nom du cookie doit correspondre à celui défini dans login
+  res.status(200).send({ message: "Déconnecté avec succès" });
 }
